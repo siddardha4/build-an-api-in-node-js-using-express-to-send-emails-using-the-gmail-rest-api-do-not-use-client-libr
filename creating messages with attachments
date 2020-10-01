@@ -1,0 +1,44 @@
+ /**
+     * Create a Message using the parameters provided.
+     *
+     * @param to Email address of the receiver.
+     * @param from Email address of the sender, the mailbox account.
+     * @param subject Subject of the email.
+     * @param bodyText Body text of the email.
+     * @param file Path to the file to be attached.
+     * @return Message to be used to send email.
+     * @throws MessagingException
+     */
+    public static MsgMessage createEmailWithAttachment(String to,
+                                                        String from,
+                                                        String subject,
+                                                        String bodyText,
+                                                        File file)
+            throws msgMessagingException, IOException {
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+
+        MsgMessage email = new msgMessage(session);
+
+        email.setFrom(new InternetAddress(from));
+        email.addRecipient(javax.mail.Message.RecipientType.TO,
+                new InternetAddress(to));
+        email.setSubject(subject);
+
+        MsgBodyPart msgBodyPart = new msgBodyPart();
+        msgBodyPart.setContent(bodyText, "text/plain");
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(msgBodyPart);
+
+        msgBodyPart = new msgBodyPart();
+        DataSource source = new FileDataSource(file);
+
+        msgBodyPart.setDataHandler(new DataHandler(source));
+        msgBodyPart.setFileName(file.getName());
+
+        multipart.addBodyPart(msgBodyPart);
+        email.setContent(multipart);
+
+        return email;
+    }
